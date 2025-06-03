@@ -98,13 +98,13 @@ def test(denoise_decoder, low_decoders, high_decoder, dataloader, device, folder
     origin_acc /= len(dataloader.dataset)
     better_acc /= len(dataloader.dataset)
 
-    if high_decoder is None and save_dir is not None:
-        save_data(pred_syndromes, save_dir,
-                  'pred_syndromes.pt', overwrite=True)
-        save_data(pred_recoveries, save_dir,
-                  'pred_recoveries.pt', overwrite=True)
-        save_data(SUNetQD_logic_errors, save_dir,
-                  'SUNetQD_logic_errors.pt', overwrite=True)
+    # if high_decoder is None and save_dir is not None:
+    #     save_data(pred_syndromes, save_dir,
+    #               'pred_syndromes.pt', overwrite=True)
+    #     save_data(pred_recoveries, save_dir,
+    #               'pred_recoveries.pt', overwrite=True)
+    #     save_data(SUNetQD_logic_errors, save_dir,
+    #               'SUNetQD_logic_errors.pt', overwrite=True)
 
     now = time() - start
     print("no_synd_rate: {:.4f}, origin_acc: {:.4f}, better_acc: {:.4f}, cost time: {:.0f}m {:.0f}s".format(
@@ -113,19 +113,19 @@ def test(denoise_decoder, low_decoders, high_decoder, dataloader, device, folder
 
 
 if __name__ == "__main__":
-    my_code = ToricCode(9, 9)
+    my_code = ToricCode(5, 5)
     _, _, d = my_code.n_k_d
     measure_err_factor = 1
-    # my_noise_model = DepolarizingErrorModel()
-    # train_errs = {0.02: 10**5, 0.025: 10**5, 0.03: 10**5, 0.035: 10**5}
+    my_noise_model = DepolarizingErrorModel()
+    train_errs = {0.02: 10**5, 0.025: 10**5, 0.03: 10**5, 0.035: 10**5}
     # my_noise_model = BiasedDepolarizingErrorModel(5, 'Y')
     # train_errs = {0.02: 10**5, 0.025: 10**5, 0.03: 10**5, 0.035: 10**5}
-    my_noise_model = BiasedDepolarizingErrorModel(50, 'Y')
-    train_errs = {0.025: 10**5, 0.03: 10**5, 0.035: 10**5, 0.04: 10**5}
+    # my_noise_model = BiasedDepolarizingErrorModel(50, 'Y')
+    # train_errs = {0.025: 10**5, 0.03: 10**5, 0.035: 10**5, 0.04: 10**5}
     # my_noise_model = BitPhaseFlipErrorModel()
     # train_errs = {0.025: 10**5, 0.03: 10**5, 0.035: 10**5, 0.04: 10**5}
 
-    device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     batch_size = 256
     channels_2d, channels_3d = 32, 32
     n_measure = 5
@@ -147,11 +147,11 @@ if __name__ == "__main__":
         # {0.2: 2*10**5},
         # {0.18: 2*10**5},
         # {0.06: 2*10**5},
-        {0.15: 2*10**5},
-        {0.06: 2*10**5},
-        # {0.12: 2*10**5},
-        {0.04: 2*10**5},
-        # {0.035: 2*10**5, 0.04: 2*10**5},
+        # {0.15: 2*10**5},
+        # {0.06: 2*10**5},
+        {0.12: 2*10**5},
+        # {0.04: 2*10**5},
+        {0.03: 2*10**5},
     ]
     n_pred_list = [4]*len(low_err_probs_list)
     low_decoders = []
@@ -179,10 +179,12 @@ if __name__ == "__main__":
         test_origin_acc.append(origin_acc)
         test_better_acc.append(better_acc)
 
-    file_dir = denoise_decoder.file_dir if high_decoder is None else high_decoder.file_dir
-    np.savez(os.path.join(folder_path, file_dir, str(measure_err_factor)+"_"+str(train_errs), "SUNetQD.npz"),
-             x=test_probs,
-             y=test_origin_acc)
+    print(test_probs)
+    print(test_origin_acc)
+    # file_dir = denoise_decoder.file_dir if high_decoder is None else high_decoder.file_dir
+    # np.savez(os.path.join(folder_path, file_dir, str(measure_err_factor)+"_"+str(train_errs), "SUNetQD.npz"),
+    #          x=test_probs,
+    #          y=test_origin_acc)
     # np.savez(os.path.join(folder_path, file_dir, str(measure_err_factor)+"_"+str(train_errs), "Enhanced_SUNetQD.npz"),
     #          x=test_probs,
     #          y=test_better_acc)

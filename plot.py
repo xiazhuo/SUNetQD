@@ -18,6 +18,7 @@ def plot_err(ax, codes, error_model, labels=['MWPM', 'SUNetQD', 'Enhanced_SUNetQ
     def find_npz_files(directory, filters):
         npz_files = []
         for root, _, files in os.walk(directory):
+            root = root.replace("\\", "/")
             for label in labels:
                 if label+".npz" in files:
                     # 使用正则表达式检查路径是否匹配过滤字符串中的任意一个
@@ -30,13 +31,13 @@ def plot_err(ax, codes, error_model, labels=['MWPM', 'SUNetQD', 'Enhanced_SUNetQ
         base_path = os.path.join(my_code.label, error_model.label, "model")
         npz_files = find_npz_files(base_path, filters)
 
-        j=1
+        j = 1
         for parent_dir, label, npz_path in npz_files:
             print(my_code.label, label, parent_dir)
             data = np.load(npz_path)
             ax.plot(data['x'], 1-data['y'], plt_shape[j]+(plt_line[label] if label in plt_line else '-'),
-                     label="{} {}".format(my_code.label, label))
-            j-=1
+                    label="{} {}".format(my_code.label, label))
+            j -= 1
             # if "True" in parent_dir:
             #     ax.plot(data['x'], 1-data['y'], plt_shape[i]+"-",
             #              label="{} {}".format(my_code.label, "w/ Attention"))
@@ -178,7 +179,7 @@ def plot_transfer(ax, df):
             'color': '#1F77B4'
             # 'color': '#9467BD'
         },
-        ]
+    ]
 
     for model in models:
         column = model['column']
@@ -195,16 +196,17 @@ def plot_transfer(ax, df):
                 label=model['label'],
                 markevery=5
             )
-    ax.hlines(y=0.07935, xmin=0, xmax=250000, color='#2CA02C', linestyle='--', linewidth=1)
+    ax.hlines(y=0.07935, xmin=0, xmax=250000,
+              color='#2CA02C', linestyle='--', linewidth=1)
 
 
 if __name__ == "__main__":
-    codes = [ToricCode(*size) for size in [(5, 5),(7, 7),(9, 9)]]
+    codes = [ToricCode(*size) for size in [(5, 5), (7, 7), (9, 9)]]
     my_error_model = DepolarizingErrorModel()
     # my_error_model = BiasedDepolarizingErrorModel(5, 'Y')
     # my_error_model = BiasedDepolarizingErrorModel(50, 'Y')
     # my_error_model = BitPhaseFlipErrorModel()
-    labels=['Toric 9x9 train from scratch', 'Toric 9x9 transfer from 5x5']
+    labels = ['MWPM', 'SUNetQD']
     filters = ['.*MWPM.*/1_.*', '.*low_decoder.*/1_.*']
 
     plt.rcParams.update({
@@ -213,18 +215,17 @@ if __name__ == "__main__":
         'axes.titlesize': 20,
         'figure.figsize': (14, 9),  # Slightly larger figure
     })
-    
+
     _, ax = plt.subplots()
 
-    
-    df = pd.read_csv('result.csv')
-    plot_loss(ax, df)
-    
+    # df = pd.read_csv('result.csv')
+    # plot_loss(ax, df)
+
     # df = pd.read_csv('1.csv')
     # plot_transfer(ax, df)
     # df = pd.read_csv('2.csv')
     # plot_transfer(ax, df)
-    
+
     # axins = inset_axes(
     #     ax,
     #     width="40%",  # 宽度为原图的50%
@@ -233,33 +234,33 @@ if __name__ == "__main__":
     #     bbox_to_anchor=(-0.05, 0, 0.95, 0.95),  # 1表示完全靠右，0.5垂直居中
     #     bbox_transform=ax.transAxes,
     # )
-    
-    # plot_err(axins, codes, my_error_model, labels=labels, filters=filters)
-    # ax.set_title(my_error_model.label+" and Measurement Error")
-    # axins.set_xlabel('physical error rate')
-    # axins.set_ylabel('logical error rate')
-    
+
+    plot_err(ax, codes, my_error_model, labels=labels, filters=filters)
+    ax.set_title(my_error_model.label+" and Measurement Error")
+    ax.set_xlabel('physical error rate')
+    ax.set_ylabel('logical error rate')
+
     # ax.set_title(
     #     'Loss Comparison for Different Toric Code Configurations')
     # ax.set_title("Transfer Learning of SUNetQD on " + my_error_model.label+" and Measurement Error")
-    ax.set_xlabel('Training Steps')
-    ax.set_ylabel('Cross-Entropy Loss')
-    
-    ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
-    ax.yaxis.set_minor_locator(ticker.LogLocator(subs='all'))
+    # ax.set_xlabel('Training Steps')
+    # ax.set_ylabel('Cross-Entropy Loss')
+
+    # ax.yaxis.set_major_formatter(ticker.ScalarFormatter())
+    # ax.yaxis.set_minor_locator(ticker.LogLocator(subs='all'))
 
     ax.legend(
-        loc='upper right',
+        # loc='upper right',
         frameon=True,
         framealpha=0.7,
         fancybox=True,
         # shadow=True
     )
     plt.tight_layout()
-    
+
     # plt.savefig(f'./outputs/{my_error_model.label} {" ".join(labels)}.pdf')
     # print(
     #     f'successfully saved the figure in outputs/{my_error_model.label} {" ".join(labels)}.pdf')
-
-    plt.savefig(f'outputs/1.pdf')
-    print("successfully saved the figure in 1.pdf")
+    plt.show()
+    # plt.savefig(f'outputs/1.pdf')
+    # print("successfully saved the figure in 1.pdf")

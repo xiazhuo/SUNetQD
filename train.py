@@ -120,7 +120,7 @@ if __name__ == "__main__":
     # train_errs = {0.03: 1*10**5, 0.035: 1*10**5}
     train_errs = {0.17: 2*10**5}
 
-    device = torch.device('cuda:2' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     batch_size = 256
     learning_rate = 0.005
     epochs = 150
