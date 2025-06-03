@@ -10,6 +10,18 @@ Official PyTorch implementation of the paper ["Self-attention U-Net decoder for 
 ## :mag: Overview
 The Self-attention U-Net Quantum Decoder (SU-NetQD) is proposed for decoding toric codes, outperforming Minimum Weight Perfect Matching (MWPM) decoders, especially in circuit-level noise environments. SU-NetQD achieves lower logical error rates and an increased code threshold with noise bias, reaching a high threshold of 0.231 for extremely biased noise. The key innovation lies in combining low-level and high-level decoders. Transfer learning allows scalability for different code distances.
 
+## :rocket: Pipeline
+
+Here's an overview of the framework of the low-level decoder:
+![](./pics/low-level%20decoder.png)
+
+The comparison of the decoding performance (logical error rate (LER)) of SUNetQD and MWPM under various physical error rates of different noise models:
+![](./pics/perfomance%20compare%20under%20different%20noise%20model.png)
+
+The comparison of the decoding performance under measurement noise condition and various physical error rates of different noise models:
+![](./pics/perfomance%20compare%20under%20different%20noise%20model%20and%20measurement%20error.png)
+
+
 ## :construction_worker: TODO
 <font color="red">**We are currently organizing all the code and plan to add more features.**</font>
 - [x] `network.py`: Core SU-Net model definition
@@ -66,7 +78,7 @@ python plot.py
 This script generates plots visualizing the decoder's performance.
 
 **(c) Test the model with the provided weights**
-Modify parameters within `test.py` (e.g., `my_code`, `my_noise_model`, `low_err_probs_list), then run:
+Modify parameters within `test.py` (e.g., `my_code`, `my_noise_model`, `low_err_probs_list`), then run:
 
 ```sh
 python test.py
